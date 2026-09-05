@@ -107,9 +107,9 @@
       <section id="resultat" hidden>
         <h2>Sammanfattning</h2>
         <pre id="sammanfattning"></pre>
-        <p class="muted">Skicka in genom att trycka på knappen nedan – ditt e-postprogram öppnas
-          med allt ifyllt, texten nedan ska inte ändras.</p>
+        <p class="muted" id="resultat-hjalptext"></p>
         <div class="toolbar">
+          <button id="skicka-emailjs" type="button" hidden>✅ Skicka in</button>
           <button id="oppna-mail" type="button">✉️ Skicka in via e-post</button>
           <button id="kopiera" type="button" class="secondary">Kopiera texten i stället</button>
           <button id="skicka-m365" type="button" hidden>Skicka via Microsoft 365</button>
@@ -119,6 +119,8 @@
       </section>
     </div>
 
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+    <script src="config.js"></script>
     <script src="frv_api_bridge.js"></script>
     <script src="follow_up_letter.js"></script>
     <script src="styrelseformular.js"></script>

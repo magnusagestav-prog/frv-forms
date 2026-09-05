@@ -166,6 +166,11 @@ function showErrors(errors) {
   return true;
 }
 
+function emailJsConfigured() {
+  return Boolean(window.emailjs && window.FRV_EMAILJS_SERVICE_ID && window.FRV_EMAILJS_TEMPLATE_ID
+    && window.FRV_EMAILJS_PUBLIC_KEY);
+}
+
 function review() {
   const people = collectRows();
   const confirmed = document.querySelector('#bekrafta').checked;
@@ -184,10 +189,51 @@ function review() {
   const bridge = window.frvApi && typeof window.frvApi.sendMail === 'function'
     && (typeof window.frvApi.isReady !== 'function' || window.frvApi.isReady());
   document.querySelector('#skicka-m365').hidden = !bridge;
-  document.querySelector('#status').textContent = bridge
-    ? 'Klart att skickas via Microsoft 365.'
-    : 'Kopiera texten eller öppna e-postprogrammet och skicka till kansliet.';
+
+  const emailJsReady = emailJsConfigured();
+  const emailJsButton = document.querySelector('#skicka-emailjs');
+  emailJsButton.hidden = !emailJsReady;
+  emailJsButton.disabled = false;
+  emailJsButton.textContent = '✅ Skicka in';
+
+  const helpText = document.querySelector('#resultat-hjalptext');
+  if (emailJsReady) {
+    helpText.textContent = 'Tryck på "Skicka in" nedan – inskicket går direkt till kansliet, inget e-postprogram behöver öppnas.';
+  } else if (bridge) {
+    helpText.textContent = 'Klart att skickas via Microsoft 365.';
+  } else {
+    helpText.textContent = 'Skicka in genom att trycka på knappen nedan – ditt e-postprogram öppnas med allt ifyllt, texten nedan ska inte ändras.';
+  }
+  document.querySelector('#status').textContent = '';
   document.querySelector('#resultat').scrollIntoView?.({ behavior: 'smooth' });
+}
+
+async function sendViaEmailJs() {
+  const forening = document.querySelector('#forening').value.trim();
+  const button = document.querySelector('#skicka-emailjs');
+  const status = document.querySelector('#status');
+  button.disabled = true;
+  button.textContent = 'Skickar…';
+  try {
+    window.emailjs.init({ publicKey: window.FRV_EMAILJS_PUBLIC_KEY });
+    await window.emailjs.send(window.FRV_EMAILJS_SERVICE_ID, window.FRV_EMAILJS_TEMPLATE_ID, {
+      forening,
+      inskickat_av: document.querySelector('#inskickat-av').value.trim(),
+      subject: `Styrelseuppgifter ${forening}`.trim(),
+      message: document.querySelector('#block').value,
+      to_email: KANSLI_EMAIL,
+    });
+    status.textContent = 'Skickat till kansliet. Tack!';
+    button.textContent = 'Skickat';
+  } catch (error) {
+    submitAttempts += 1;
+    status.textContent = submitAttempts === 1
+      ? `Det gick inte att skicka just nu (${(error && error.text) || (error && error.message) || 'okänt fel'}). `
+        + 'Vänta en stund och försök igen, eller använd e-postknappen.'
+      : `Fortfarande fel efter ${submitAttempts} försök. Kontakta ${KANSLI_EMAIL} eller använd e-postknappen.`;
+    button.disabled = false;
+    button.textContent = '↺ Försök igen';
+  }
 }
 
 async function copyBlock() {
@@ -332,4 +378,5 @@ document.addEventListener('DOMContentLoaded', () => {
   document.querySelector('#kopiera').addEventListener('click', copyBlock);
   document.querySelector('#oppna-mail').addEventListener('click', openMail);
   document.querySelector('#skicka-m365').addEventListener('click', sendViaM365);
+  document.querySelector('#skicka-emailjs').addEventListener('click', sendViaEmailJs);
 });
