@@ -9,6 +9,6 @@
 // (t.ex. kansli@funktionsrattvastmanland.se via Outlook365-tjänsten eller
 // SMTP), skapa en mall och fyll i de tre värdena nedan. Publika nyckeln är
 // inte hemlig – EmailJS är designat för att den ska ligga i klientkod.
-window.FRV_EMAILJS_SERVICE_ID = '';
-window.FRV_EMAILJS_TEMPLATE_ID = '';
-window.FRV_EMAILJS_PUBLIC_KEY = '';
+window.FRV_EMAILJS_SERVICE_ID = 'service_c0u16ri';
+window.FRV_EMAILJS_TEMPLATE_ID = 'template_b8588vc';
+window.FRV_EMAILJS_PUBLIC_KEY = 'wZmpyDsQjzlNFK-u1';
