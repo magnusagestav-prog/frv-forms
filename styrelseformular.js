@@ -196,6 +196,12 @@ function review() {
   emailJsButton.disabled = false;
   emailJsButton.textContent = '✅ Skicka in';
 
+  // Mailto/kopiera är bara en reserv – dold när EmailJS faktiskt fungerar, så
+  // formuläret inte visar tre olika sätt att skicka in samma sak. Kommer
+  // tillbaka automatiskt om EmailJS av någon anledning slutar vara konfigurerat.
+  document.querySelector('#oppna-mail').hidden = emailJsReady;
+  document.querySelector('#kopiera').hidden = emailJsReady;
+
   const helpText = document.querySelector('#resultat-hjalptext');
   if (emailJsReady) {
     helpText.textContent = 'Tryck på "Skicka in" nedan – inskicket går direkt till kansliet, inget e-postprogram behöver öppnas.';
