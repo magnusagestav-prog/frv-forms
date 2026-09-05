@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="sv">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FRV – Styrelseuppgifter</title>
+    <style>
+      body { font-family: Arial, sans-serif; background: #f4f6f8; color: #1c2a36; margin: 0; padding: 24px; }
+      .panel { max-width: 1100px; margin: 0 auto; background: #fff; border-radius: 12px; padding: 24px; box-shadow: 0 8px 20px rgba(0,0,0,0.06); }
+      h1 { margin-top: 0; font-size: 22px; }
+      p.lead { color: #586875; }
+      .meta { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 14px; margin: 16px 0; }
+      .field { display: flex; flex-direction: column; gap: 5px; }
+      .field input { min-height: 36px; padding: 7px 9px; border: 1px solid #c7d1da; border-radius: 5px; }
+      .table-wrap { overflow-x: auto; }
+      table { border-collapse: collapse; width: 100%; min-width: 900px; margin-top: 8px; }
+      th, td { border: 1px solid #dde4ea; padding: 6px; text-align: left; font-size: 13px; }
+      th { background: #f0f4f8; }
+      td.mid { text-align: center; }
+      td input[type="text"], td input[type="email"], td input:not([type]), td select { width: 100%; box-sizing: border-box; min-height: 32px; padding: 4px 6px; border: 1px solid #c7d1da; border-radius: 4px; }
+      button { border: none; border-radius: 8px; background: #1d5b9b; color: #fff; padding: 10px 14px; cursor: pointer; }
+      button:hover { background: #164777; }
+      button.secondary { background: #647482; }
+      button.link { background: none; color: #1d5b9b; padding: 2px 4px; text-decoration: underline; }
+      .toolbar { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; margin: 16px 0; }
+      .confirm { display: flex; gap: 8px; align-items: flex-start; margin: 16px 0; }
+      #fel-box { background: #fdecea; border: 1px solid #f5b7b1; border-radius: 8px; padding: 12px 16px; margin: 12px 0; }
+      #fel-box ul { margin: 8px 0 0; }
+      #resultat { border-top: 1px solid #dde4ea; margin-top: 24px; padding-top: 16px; }
+      pre#sammanfattning { background: #fafbfd; border: 1px solid #dde4ea; border-radius: 8px; padding: 12px; white-space: pre-wrap; font-size: 13px; }
+      textarea#block { width: 100%; min-height: 120px; box-sizing: border-box; font-family: monospace; font-size: 12px; padding: 10px; border: 1px solid #c7d1da; border-radius: 6px; }
+      .muted { color: #586875; }
+    </style>
+  </head>
+  <body>
+    <div class="panel">
+      <h1>Uppdatera styrelse- och funktionärsuppgifter</h1>
+      <p class="lead">
+        <strong id="rubrik">Din förening</strong> – fyll i föreningens aktuella funktionärer nedan
+        och skicka in listan till Funktionsrätt Västmanlands kansli.
+      </p>
+
+      <div id="brev-text"></div>
+
+      <div class="box-forward" style="background:#f5f8fc; border:1px solid #dde4ea; border-radius:8px; padding:12px 16px; margin:16px 0;">
+        <p class="muted" style="margin:0 0 8px;">Inte rätt person att fylla i det här? Vidarebefordra formuläret till någon som kan svara på frågorna:</p>
+        <div class="toolbar" style="margin:0;">
+          <label class="field" style="flex:1; min-width:220px;">
+            <span>E-post till rätt person</span>
+            <input id="vidarebefordra-epost" type="email" placeholder="namn@exempel.se" autocomplete="off" />
+          </label>
+          <button id="vidarebefordra-knapp" type="button" class="secondary">Vidarebefordra formuläret</button>
+        </div>
+        <span id="vidarebefordra-status" class="muted" role="status"></span>
+
+        <p class="muted" style="margin:12px 0 8px;">
+          Vet du inte vem som är rätt person, eller har du inte dennes e-postadress?
+          Tryck här så skickas formuläret automatiskt vidare till nästa i ordningen
+          (ordförande → vice ordförande → kassör → sekreterare → hela styrelsen):
+        </p>
+        <div class="toolbar" style="margin:0;">
+          <button id="nasta-person-knapp" type="button" class="secondary">Skicka till nästa person</button>
+        </div>
+        <span id="nasta-person-status" class="muted" role="status"></span>
+      </div>
+
+      <div class="meta">
+        <label class="field">
+          <span>Förening</span>
+          <input id="forening" autocomplete="off" />
+          <span class="muted" style="font-size:12px;">Rätta om föreningens namn har ändrats – kopplingen till er förening i registret följer med.</span>
+        </label>
+        <label class="field">
+          <span>Inskickat av (namn)</span>
+          <input id="inskickat-av" autocomplete="off" />
+        </label>
+      </div>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Förnamn</th><th>Efternamn</th><th>Roll</th><th>Position</th>
+              <th>E-post</th><th>Telefon</th><th>Offentlig</th><th>Boknings&shy;behörighet</th>
+              <th></th>
+            </tr>
+          </thead>
+          <tbody id="rows"></tbody>
+        </table>
+      </div>
+
+      <div class="toolbar">
+        <button id="lagg-till" type="button" class="secondary">+ Lägg till rad</button>
+      </div>
+
+      <label class="confirm">
+        <input id="bekrafta" type="checkbox" />
+        <span>Jag bekräftar att uppgifterna stämmer och får delas med FRV:s kansli och intranät.</span>
+      </label>
+
+      <div id="fel-box" hidden></div>
+
+      <div class="toolbar">
+        <button id="granska" type="button">Granska och skapa inskick</button>
+      </div>
+
+      <section id="resultat" hidden>
+        <h2>Sammanfattning</h2>
+        <pre id="sammanfattning"></pre>
+        <p class="muted">Skicka texten nedan till kansliet – oförändrad.</p>
+        <textarea id="block" readonly></textarea>
+        <div class="toolbar">
+          <button id="kopiera" type="button">Kopiera text</button>
+          <button id="oppna-mail" type="button" class="secondary">Öppna e-postprogram</button>
+          <button id="skicka-m365" type="button" hidden>Skicka via Microsoft 365</button>
+          <span id="status" class="muted" role="status"></span>
+        </div>
+      </section>
+    </div>
+
+    <script src="frv_api_bridge.js"></script>
+    <script src="follow_up_letter.js"></script>
+    <script src="styrelseformular.js"></script>
+  </body>
+</html>
