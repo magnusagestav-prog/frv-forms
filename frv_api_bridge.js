@@ -205,6 +205,11 @@
     const summary = {
       timestamp: started,
       to: (Array.isArray(message.to) ? message.to.join(', ') : String(message.to || '')),
+      // Bcc syns nu i loggen – annars är det osynligt i efterhand vilka som
+      // faktiskt fick ett massutskick. Upptäckt 2026-09-08: en styrelse-
+      // påminnelse gick ut med över 100 adresser synliga i Till-fältet i
+      // stället för Bcc, och det märktes bara för att en mottagare svarade.
+      bcc: (Array.isArray(message.bcc) ? message.bcc.join(', ') : String(message.bcc || '')),
       subject: message.subject || '',
       mode: state.mode,
     };

@@ -196,11 +196,14 @@ function review() {
   emailJsButton.disabled = false;
   emailJsButton.textContent = '✅ Skicka in';
 
-  // Mailto/kopiera är bara en reserv – dold när EmailJS faktiskt fungerar, så
-  // formuläret inte visar tre olika sätt att skicka in samma sak. Kommer
-  // tillbaka automatiskt om EmailJS av någon anledning slutar vara konfigurerat.
+  // Mailto/kopiera/sammanfattning/rå-blocket är bara reserv och teknisk
+  // utskrift – döljs när EmailJS faktiskt fungerar så en förening bara ser
+  // "Skicka in", inte tre olika sätt att göra samma sak plus en bit rå JSON.
+  // Kommer tillbaka automatiskt om EmailJS av någon anledning slutar fungera.
   document.querySelector('#oppna-mail').hidden = emailJsReady;
   document.querySelector('#kopiera').hidden = emailJsReady;
+  document.querySelector('#sammanfattning-block').hidden = emailJsReady;
+  document.querySelector('#block').hidden = emailJsReady;
 
   const helpText = document.querySelector('#resultat-hjalptext');
   if (emailJsReady) {

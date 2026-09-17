@@ -8,7 +8,7 @@
 window.FRV_DEFAULT_LINK_MESSAGE = `<p>Hej!</p>
 <p>Funktionsrätt Västmanland behöver aktuella kontaktuppgifter till er förenings styrelse och
 funktionärer för att kunna nå er med information, kallelser och annat som rör medlemskapet.</p>
-<p>Uppgifterna ger också era funktionärer tillgång till förbundets intranät, där ni bland annat
+<p>Uppgifterna ger också era funktionärer tillgång till Funktionsrätt Västmanlands intranät, där ni bland annat
 kan boka lokaler och se annan medlemsinformation.</p>
 <p>Kort om fälten i formuläret: <strong>Position</strong> är personens faktiska styrelsepost
 (ordförande, kassör osv). <strong>Offentlig</strong> kryssas i om personen får visas i
