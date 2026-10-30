@@ -20,6 +20,7 @@
   const GRAPH_BASE = 'https://graph.microsoft.com/v1.0';
   const LOG_KEY = 'frvSendLog';
   const MAX_LOG = 200;
+  const SENDLOG_API = '/api/sendlog';
 
   const state = {
     mode: 'disabled',
@@ -74,6 +75,19 @@
       if (global.localStorage) global.localStorage.setItem(LOG_KEY, JSON.stringify(log));
     } catch (error) {
       /* localStorage kan saknas – logg blir då bara i minnet via returvärdet */
+    }
+    // Bäst-ansträngning i bakgrunden: sparar samma post till servern om den
+    // finns (src/send_log.py via src/gui_server.py) – annars levde
+    // sändloggen bara i den här webbläsarens localStorage, oläsbar i
+    // efterhand (en annan dator, eller filsystemet direkt). Fungerar utan
+    // server precis som förut, samma "tyst vid fel"-princip som
+    // saveReminderStates() i mail_list_ui.js.
+    if (typeof global.fetch === 'function') {
+      global.fetch(SENDLOG_API, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(entry),
+      }).catch(() => { /* offline/servern nere – localStorage-kopian gäller */ });
     }
     return entry;
   }
