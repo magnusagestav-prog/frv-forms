@@ -11,6 +11,8 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // "Skicka till nästa person"-knappen för att hitta rätt mottagare.
 const ESCALATION_HIERARCHY = ['ordförande', 'vice ordförande', 'kassör', 'sekreterare'];
 let currentPrefill = [];
+let serverPrefill = null;
+let formInitialised = false;
 
 const BOARD_FORM_START = '===FRV-STYRELSE-START===';
 const BOARD_FORM_END = '===FRV-STYRELSE-SLUT===';
@@ -20,9 +22,9 @@ let submitAttempts = 0;
 function params() {
   const query = new URLSearchParams(window.location.search);
   return {
-    forening: query.get('forening') || '',
-    member_id: query.get('member_id') || '',
-    inskickat_av: query.get('inskickat_av') || '',
+    forening: serverPrefill?.forening || query.get('forening') || '',
+    member_id: serverPrefill?.member_id || query.get('member_id') || '',
+    inskickat_av: serverPrefill?.inskickat_av || query.get('inskickat_av') || '',
     inskickat_av_id: query.get('inskickat_av_id') || '',
     data: query.get('data') || '',
     brev: query.get('brev') || '',
@@ -361,7 +363,22 @@ async function sendViaM365() {
   button.textContent = '↺ Försök igen';
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
+  if (formInitialised) return;
+  formInitialised = true;
+  const privateRef = new URLSearchParams(window.location.search).get('p');
+  if (privateRef) {
+    try {
+      const response = await fetch('https://funktionsrattvastmanland.se/wp-json/frvfr/v1/form-prefill/' + encodeURIComponent(privateRef), {cache:'no-store',credentials:'omit',referrerPolicy:'no-referrer'});
+      if (!response.ok) throw new Error('expired');
+      serverPrefill = await response.json();
+      if (!Array.isArray(serverPrefill.data)) throw new Error('invalid');
+    } catch {
+      document.querySelector('#status').textContent = 'Länken har gått ut eller förifyllningen kan inte hämtas. Be kansliet om en ny länk.';
+      document.querySelectorAll('button').forEach(button => { button.disabled = true; });
+      return;
+    }
+  }
   const query = params();
   document.querySelector('#forening').value = query.forening;
   document.querySelector('#inskickat-av').value = query.inskickat_av;
@@ -372,7 +389,7 @@ document.addEventListener('DOMContentLoaded', () => {
   const brevHtml = decodeLinkMessage(query.brev) || window.FRV_DEFAULT_LINK_MESSAGE || '';
   if (brevHtml) document.querySelector('#brev-text').innerHTML = sanitizeRenderedHtml(brevHtml);
 
-  const prefill = decodePrefillPeople(query.data);
+  const prefill = serverPrefill?.data || decodePrefillPeople(query.data);
   currentPrefill = prefill;
   const lead = document.querySelector('p.lead');
   if (prefill.length) {
