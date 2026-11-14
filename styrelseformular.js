@@ -69,19 +69,19 @@ function optionList(values, selected) {
 function addRow(person = {}) {
   const tbody = document.querySelector('#rows');
   const tr = document.createElement('tr');
-  tr.innerHTML = `
-    <td><input class="fn" value="${person.first_name || ''}" autocomplete="off" /></td>
-    <td><input class="en" value="${person.last_name || ''}" autocomplete="off" /></td>
+  tr.innerHTML = sanitizeRenderedHtml(`
+    <td><input class="fn" value="${escapeHtml(person.first_name || '')}" autocomplete="off" /></td>
+    <td><input class="en" value="${escapeHtml(person.last_name || '')}" autocomplete="off" /></td>
     <td><select class="roll">${optionList(ROLE_OPTIONS, person.roll || '')}</select></td>
     <td><select class="position">${optionList(POSITION_OPTIONS, person.position || '')}</select></td>
-    <td><input class="epost" type="email" value="${person.epost || ''}" autocomplete="off" /></td>
-    <td><input class="telefon" value="${person.telefon || ''}" autocomplete="off" /></td>
+    <td><input class="epost" type="email" value="${escapeHtml(person.epost || '')}" autocomplete="off" /></td>
+    <td><input class="telefon" value="${escapeHtml(person.telefon || '')}" autocomplete="off" /></td>
     <td class="mid"><input class="offentlig" type="checkbox"${person.offentlig ? ' checked' : ''} /></td>
     <td class="mid"><input class="bokning" type="checkbox"${person.bokning ? ' checked' : ''} /></td>
     <td class="mid"><input class="kopiering" type="checkbox"${person.kopiering ? ' checked' : ''} /></td>
     <td class="mid"><input class="tagg" type="checkbox"${person.tagg ? ' checked' : ''} /></td>
     <td class="mid"><button type="button" class="link remove">Ta bort</button></td>
-  `;
+  `);
   tr.querySelector('.remove').addEventListener('click', () => {
     tr.remove();
     if (!tbody.querySelector('tr')) addRow();
@@ -168,8 +168,8 @@ function showErrors(errors) {
   const box = document.querySelector('#fel-box');
   if (!errors.length) { box.hidden = true; box.textContent = ''; return false; }
   box.hidden = false;
-  box.innerHTML = '<strong>Kontrollera formuläret:</strong><ul>' +
-    errors.map((error) => `<li>${error}</li>`).join('') + '</ul>';
+  box.innerHTML = sanitizeRenderedHtml('<strong>Kontrollera formuläret:</strong><ul>' +
+    errors.map((error) => `<li>${error}</li>`).join('') + '</ul>');
   return true;
 }
 
@@ -370,7 +370,7 @@ document.addEventListener('DOMContentLoaded', () => {
   // Länken kan bära på en redigerad version (brev=), annars visas samma
   // standardtext som mejlet alltid skickas med – aldrig tomt.
   const brevHtml = decodeLinkMessage(query.brev) || window.FRV_DEFAULT_LINK_MESSAGE || '';
-  if (brevHtml) document.querySelector('#brev-text').innerHTML = brevHtml;
+  if (brevHtml) document.querySelector('#brev-text').innerHTML = sanitizeRenderedHtml(brevHtml);
 
   const prefill = decodePrefillPeople(query.data);
   currentPrefill = prefill;
