@@ -1,7 +1,8 @@
 'use strict';
 
 const KANSLI_EMAIL = 'kansli@funktionsrattvastmanland.se';
-const ROLE_OPTIONS = ['Administratör', 'Föreningsadministratör', 'Föreningsmedlem'];
+// Administratör sätts bara i WordPress, aldrig via formuläret.
+const ROLE_OPTIONS = ['Föreningsadministratör', 'Föreningsmedlem'];
 const POSITION_OPTIONS = ['Ordförande', 'Vice Ordförande', 'Sekreterare', 'Kassör', 'Ledamot', 'Revisor', 'Ersättare', 'Personal', 'Kanslist', 'Funktionär', 'Valberedning'];
 const SINGLE_HOLDER_POSITIONS = ['ordförande', 'vice ordförande', 'sekreterare', 'kassör'];
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -24,7 +25,8 @@ function params() {
     inskickat_av: query.get('inskickat_av') || '',
     inskickat_av_id: query.get('inskickat_av_id') || '',
     data: query.get('data') || '',
-    brev: query.get('brev') || ''
+    brev: query.get('brev') || '',
+    t: query.get('t') || ''
   };
 }
 
@@ -146,6 +148,7 @@ function buildBlock(people) {
     member_id: query.member_id,
     inskickat_av: document.querySelector('#inskickat-av').value.trim(),
     inskickat_av_id: query.inskickat_av_id,
+    token: query.t,
     ar: new Date().getFullYear(),
     skickad: new Date().toISOString().split('T')[0],
     bekraftad: true,
