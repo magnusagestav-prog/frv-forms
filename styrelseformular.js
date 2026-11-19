@@ -68,6 +68,11 @@ function optionList(values, selected) {
     .join('');
 }
 
+function normalizeCopierStatus(value) {
+  if (value === true) return 'Ja';
+  return ['Ja', 'Nej', 'Ej angivet'].includes(value) ? value : 'Ej angivet';
+}
+
 function addRow(person = {}) {
   const tbody = document.querySelector('#rows');
   const tr = document.createElement('tr');
@@ -80,7 +85,7 @@ function addRow(person = {}) {
     <td><input class="telefon" value="${escapeHtml(person.telefon || '')}" autocomplete="off" /></td>
     <td class="mid"><input class="offentlig" type="checkbox"${person.offentlig ? ' checked' : ''} /></td>
     <td class="mid"><input class="bokning" type="checkbox"${person.bokning ? ' checked' : ''} /></td>
-    <td class="mid"><input class="kopiering" type="checkbox"${person.kopiering ? ' checked' : ''} /></td>
+    <td class="mid"><select class="kopiering">${['Ej angivet', 'Ja', 'Nej'].map(s => `<option${normalizeCopierStatus(person.kopiering) === s ? ' selected' : ''}>${s}</option>`).join('')}</select></td>
     <td class="mid"><input class="tagg" type="checkbox"${person.tagg ? ' checked' : ''} /></td>
     <td class="mid"><button type="button" class="link remove">Ta bort</button></td>
   `);
@@ -101,7 +106,7 @@ function collectRows() {
     telefon: tr.querySelector('.telefon').value.trim(),
     offentlig: tr.querySelector('.offentlig').checked,
     bokning: tr.querySelector('.bokning').checked,
-    kopiering: tr.querySelector('.kopiering').checked,
+    kopiering: tr.querySelector('.kopiering').value,
     tagg: tr.querySelector('.tagg').checked,
     foreningsmejl: true
   })).filter((row) => row.first_name || row.last_name || row.epost || row.roll);
@@ -162,7 +167,7 @@ function buildBlock(people) {
 function summary(people) {
   const lines = people.map((person) =>
     `• ${person.first_name} ${person.last_name} – ${person.roll}${person.position ? ' / ' + person.position : ''} – ${person.epost}` +
-    `${person.offentlig ? ' – offentlig' : ''}${person.bokning ? ' – bokningsbehörighet' : ''}${person.kopiering ? ' – kopieringskonto' : ''}${person.tagg ? ' – nyckeltagg' : ''}`);
+    `${person.offentlig ? ' – offentlig' : ''}${person.bokning ? ' – bokningsbehörighet' : ''}${' – kopiering: ' + normalizeCopierStatus(person.kopiering)}${person.tagg ? ' – nyckeltagg' : ''}`);
   return `${people.length} funktionärer\n\n${lines.join('\n')}`;
 }
 
