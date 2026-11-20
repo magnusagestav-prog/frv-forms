@@ -6,7 +6,8 @@
   window.fetch = async function(input, options) {
     const url = new URL(input instanceof Request ? input.url : input, location.href);
     const method = String(options?.method || (input instanceof Request ? input.method : 'GET')).toUpperCase();
-    if (url.origin !== location.origin || !url.pathname.startsWith('/api/') || ['GET', 'HEAD', 'OPTIONS'].includes(method)) {
+    const protectedRead = ['/api/tag-report', '/api/tag-stock', '/api/key-receipt-scans', '/api/key-receipt-scan-file'].includes(url.pathname);
+    if (url.origin !== location.origin || !url.pathname.startsWith('/api/') || (['GET', 'HEAD', 'OPTIONS'].includes(method) && !protectedRead)) {
       return originalFetch(input, options);
     }
     session ||= originalFetch('/api/session-token', { cache: 'no-store' }).then(async response => {
@@ -15,7 +16,7 @@
     }).catch(error => { session = null; throw error; });
     const headers = new Headers(options?.headers || (input instanceof Request ? input.headers : undefined));
     headers.set('X-FRV-Token', await session);
-    headers.set('Content-Type', 'application/json');
+    if (!['GET', 'HEAD', 'OPTIONS'].includes(method)) headers.set('Content-Type', 'application/json');
     return originalFetch(input, { ...options, headers });
   };
 })();
